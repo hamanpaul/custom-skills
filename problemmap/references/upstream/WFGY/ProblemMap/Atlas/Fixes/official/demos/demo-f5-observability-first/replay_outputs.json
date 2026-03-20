@@ -1,0 +1,124 @@
+{
+  "demo_id": "demo_f5_observability_first",
+  "demo_version": "v1",
+  "case_id": "f5_observability_case_001",
+  "replay_mode": "official_static_replay",
+  "summary": {
+    "baseline_outcome": "The final answer is wrong, but the system exposes too little trace structure to determine which stage failed first.",
+    "atlas_route": {
+      "primary_family": "F5",
+      "secondary_family": "F4",
+      "best_current_fit": "F5_N01 Failure Path Opacity",
+      "broken_invariant": "failure_path_visibility_broken"
+    },
+    "first_repair_move": [
+      "observability_insertion",
+      "trace_exposure",
+      "diagnostic_logging_uplift",
+      "failure_surface_clarification"
+    ],
+    "final_outcome": "After observability is inserted, the failure path becomes legible enough to show that retrieval selection drifted before downstream stages completed."
+  },
+  "baseline_snapshot": {
+    "workflow_name": "three_step_answer_pipeline",
+    "user_question": "Which product tier includes Semantic Refraction and Tension Field?",
+    "visible_logs": [
+      "pipeline_started",
+      "pipeline_completed"
+    ],
+    "baseline_answer": {
+      "text": "Lite includes those features.",
+      "confidence_style": "fluent_but_unexplained",
+      "trace_visibility": "too_thin"
+    },
+    "why_this_is_bad": [
+      "The output is wrong, but the available logs do not show which stage produced the key failure.",
+      "The operator cannot tell whether the problem started in retrieval, generation, or post-check behavior.",
+      "The system is opaque enough that any deeper repair would be partly guesswork."
+    ]
+  },
+  "route_replay": {
+    "why_primary_f5": "The first practical failure is that the operator cannot yet see enough of the failure path to choose a reliable deeper intervention.",
+    "why_not_primary_f4": "Execution pressure may exist, but closure repair should not be the first move when the system still lacks stage-level visibility.",
+    "teaching_line": "Some failures should be repaired through observability first, because the system is still too opaque to diagnose correctly."
+  },
+  "repair_replay": {
+    "step_1_observability_insertion": {
+      "action": "Add stage-level trace fields for retrieval selection, generated candidate answer, and post-check decision.",
+      "result": "The workflow now exposes intermediate states rather than only start and end events."
+    },
+    "step_2_trace_exposure": {
+      "action": "Surface which chunk was retrieved as the active evidence anchor and show the candidate answer before post-check.",
+      "result": "The operator can now see that the system locked onto a semantically adjacent Lite chunk."
+    },
+    "step_3_diagnostic_logging_uplift": {
+      "action": "Add a compact explanation field for why the post-check accepted the answer.",
+      "result": "The post-check is revealed to be too shallow to override the wrong retrieval anchor."
+    },
+    "step_4_failure_surface_clarification": {
+      "action": "Separate visible evidence from inferred causes.",
+      "result": "The case is now legible enough to justify a later F1-style grounding repair rather than a blind workflow rewrite."
+    }
+  },
+  "improved_visibility_snapshot": {
+    "retrieval_trace": {
+      "selected_chunk": "chunk_001",
+      "selection_status": "wrong_but_semantically_adjacent"
+    },
+    "generation_trace": {
+      "candidate_answer": "Lite includes those features.",
+      "candidate_status": "generated_from_wrong_anchor"
+    },
+    "post_check_trace": {
+      "decision": "accepted",
+      "decision_status": "insufficient_validation"
+    },
+    "new_visibility_value": [
+      "The operator can now see that retrieval drift happened first.",
+      "The operator can now see that the post-check failed to reject the wrong anchor.",
+      "The system is now diagnosable enough to choose the next repair layer with less guesswork."
+    ]
+  },
+  "before_after_comparison": {
+    "before": {
+      "answer": "Lite includes those features.",
+      "trace_state": "opaque",
+      "repair_state": "unrepaired",
+      "operator_position": "can_see_failure_but_not_failure_path"
+    },
+    "after": {
+      "answer": "Lite includes those features.",
+      "trace_state": "legible_enough_for_targeted_next_move",
+      "repair_state": "observability_repaired",
+      "operator_position": "can_identify_retrieval_drift_as_the_next_target"
+    },
+    "what_changed": [
+      "The first improvement is not yet the final answer. The first improvement is visibility.",
+      "The operator moved from guessing about failure causes to seeing a plausible failure path.",
+      "The correct next repair can now be chosen with more confidence."
+    ]
+  },
+  "visible_lesson": {
+    "what_users_should_notice": [
+      "The baseline output is wrong, but the bigger immediate problem is that the failure path is hidden.",
+      "Atlas routing changes the first repair move from direct intervention to visibility repair.",
+      "After observability improves, the system becomes diagnosable enough for a more precise next step."
+    ],
+    "core_message": "If the system is still too opaque to diagnose, repair visibility first."
+  },
+  "optional_wfgy_escalation": {
+    "escalation_needed": false,
+    "when_to_escalate": [
+      "If improved trace still leaves multiple plausible failure origins unresolved.",
+      "If the workflow has layered collapse patterns that require deeper structural analysis.",
+      "If warning signals remain too late or too noisy even after observability uplift."
+    ],
+    "handoff_note": "Use WFGY 3.0 only after route-first diagnosis and first observability repair have already made the case legible enough to escalate responsibly."
+  },
+  "review_status": {
+    "replay_clarity": "ready",
+    "route_alignment": "ready",
+    "repair_alignment": "ready",
+    "notebook_dependency": "not_required_for_understanding"
+  }
+}

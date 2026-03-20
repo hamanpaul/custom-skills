@@ -1,0 +1,19 @@
+{
+  "case_id": "community_f1_grounding_fixture_v1",
+  "title": "Answer drift caused by wrong evidence anchor",
+  "case_type": "grounding_failure",
+  "family_target": {
+    "primary_family": "F1",
+    "secondary_family": "F5",
+    "best_current_fit": "F1_N01 Retrieval Anchor Drift"
+  },
+  "user_question": "What is the correct answer supported by the verified source?",
+  "case_summary": "The answer looks fluent but is based on the wrong retrieved evidence chunk.",
+  "evidence_state": {
+    "verified_source_available": true,
+    "wrong_source_present": true,
+    "reasoning_chain_visible": false
+  },
+  "routing_hint": "This case should route to grounding first because the answer is no longer tied to the right evidence anchor.",
+  "first_repair_direction_hint": "re-grounding and evidence verification"
+}

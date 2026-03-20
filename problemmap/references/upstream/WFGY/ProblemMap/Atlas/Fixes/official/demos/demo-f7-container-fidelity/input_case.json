@@ -1,0 +1,121 @@
+{
+  "demo_id": "demo_f7_container_fidelity",
+  "demo_version": "v1",
+  "case_id": "f7_container_case_001",
+  "title": "A task looks like reasoning failure, but the representational container is too weak to preserve the required structure",
+  "task_type": "structured_output_container_case",
+  "family_target": {
+    "primary_family": "F7",
+    "secondary_family": "F2",
+    "best_current_fit": "F7_N01_B Formal Container Adequacy Failure",
+    "broken_invariant": "representation_container_fidelity_broken"
+  },
+  "case_goal": "Show that some failures should be repaired through container fidelity first, because the output shell is too weak or underspecified to preserve the distinctions the task depends on, and the first repair move should target descriptor fidelity and formal adequacy rather than generic reasoning pressure.",
+  "task_context": {
+    "task_name": "structured_release_note_extraction",
+    "task_description": "The system must convert a short product note into a fixed structured object with stable fields and no extra prose. In the baseline case, the instruction shell is too weak, so the model produces a partially correct but structurally unstable answer.",
+    "intended_structure": {
+      "format": "json_object",
+      "required_keys": [
+        "tier",
+        "features_requested",
+        "evidence_status",
+        "final_answer"
+      ],
+      "required_constraints": [
+        "no extra keys",
+        "no prose outside the object",
+        "features_requested must remain an array of exact strings",
+        "final_answer must be a single tier label"
+      ]
+    }
+  },
+  "input_material": {
+    "user_question": "Return the answer as a strict JSON object. Which product tier includes Semantic Refraction and Tension Field?",
+    "source_note": "Pro includes all Lite features plus Semantic Refraction, Tension Field, and Orbital Drift of Meaning."
+  },
+  "baseline_visible_artifacts": {
+    "descriptor_strength": "weak_or_underconstrained",
+    "baseline_output": "The answer is probably Pro. {\"tier_guess\":\"Pro\",\"features\":\"Semantic Refraction, Tension Field\"}",
+    "visible_structure_problems": [
+      "extra prose appears outside the object",
+      "required keys are missing",
+      "features_requested is collapsed into a string instead of an array",
+      "final_answer is missing as a stable field"
+    ],
+    "why_it_looks_like_reasoning_failure": [
+      "The output is messy and partially inconsistent.",
+      "It may look like the model failed to reason carefully.",
+      "But the container itself did not preserve the required structure."
+    ]
+  },
+  "baseline_failure_setup": {
+    "observed_failure_pattern": "The task requires a strict structured carrier, but the baseline descriptor is too weak, so the model returns partially correct content inside a broken or unstable shell.",
+    "why_baseline_is_f7_teaching_case": [
+      "The task depends on a stable formal container, not just on semantic correctness.",
+      "The baseline shell fails to preserve required distinctions and field boundaries.",
+      "A reasoning-first repair would be premature if the container is still leaking or underspecified."
+    ],
+    "tempting_wrong_reactions": [
+      "ask the model to reason harder",
+      "increase chain length without fixing the container",
+      "add more explanation examples without tightening the schema",
+      "treat the case as generic logic weakness only"
+    ]
+  },
+  "repair_intent": {
+    "first_repair_move": [
+      "descriptor_fidelity_audit",
+      "formal_adequacy_validation",
+      "container_tightening",
+      "structure_preservation_check",
+      "reassess_reasoning_after_container_repair"
+    ],
+    "do_not_start_with": [
+      "generic_reason_more_carefully_prompt",
+      "longer_chain_of_thought",
+      "retry_with_same_weak_shell",
+      "more_examples_without_container_constraints"
+    ]
+  },
+  "why_not_neighbor": {
+    "not_primary_f2": "The first failure is not that a stable reasoning path collapsed inside an accepted container. The first failure is that the container itself is too weak to preserve the structure the task depends on.",
+    "f2_pressure_exists": true,
+    "f2_pressure_note": "If the container is repaired and the task still fails through unstable inferential progression, F2 pressure may remain. But the flagship teaching cut remains F7-first."
+  },
+  "replay_requirements": {
+    "must_show": [
+      "intended_structure",
+      "baseline_output",
+      "visible_structure_problems",
+      "family_target",
+      "first_repair_move",
+      "why_not_neighbor"
+    ],
+    "teaching_focus": "Some failures should be repaired through container fidelity first because the shell carrying the answer is too weak to preserve the required structure."
+  },
+  "live_rerun_requirements": {
+    "api_key_needed": false,
+    "api_key_mode": "not_required_for_minimal_replay_demo",
+    "mandatory_for_understanding": false,
+    "notes": "The flagship F7 teaching version can work through replay artifacts and synthetic structured outputs. A live model call may be added later, but it is not required for the MVP teaching version."
+  },
+  "community_extension_hints": {
+    "safe_variations": [
+      "replace the schema with another strict output structure",
+      "compare weak descriptor versus tightened descriptor",
+      "add OCR or layout-sensitive container variants",
+      "extend the case into a stronger F7-to-F2 boundary example"
+    ],
+    "do_not_change_first": [
+      "the primary_family target",
+      "the idea that container weakness comes before reasoning pressure in this case",
+      "the contrast between a leaky shell and a repaired formal container"
+    ]
+  },
+  "review_status": {
+    "schema_status": "draft_ready",
+    "routing_status": "f7_teaching_case_aligned",
+    "fixture_status": "ready_for_replay_outputs_and_expected_output"
+  }
+}

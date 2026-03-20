@@ -1,0 +1,109 @@
+{
+  "demo_id": "demo_f5_observability_first",
+  "demo_version": "v1",
+  "case_id": "f5_observability_case_001",
+  "expected_result_type": "route_first_repair_demo",
+  "minimum_success_contract": {
+    "primary_family": "F5",
+    "secondary_family": "F4",
+    "best_current_fit": "F5_N01 Failure Path Opacity",
+    "broken_invariant": "failure_path_visibility_broken",
+    "fit_level": "node_level",
+    "confidence": "medium_or_higher",
+    "evidence_sufficiency": "sufficient_for_diagnosability_first_cut"
+  },
+  "expected_output_contract": {
+    "final_answer_may_remain_wrong": true,
+    "minimum_required_shift": "the repaired state must become more diagnosable even if the final answer has not yet been corrected",
+    "answer_quality_target": "legible_enough_for_targeted_next_move",
+    "must_not_pretend": [
+      "full root cause closure",
+      "final workflow repair completed",
+      "answer correctness already guaranteed"
+    ]
+  },
+  "expected_visibility_contract": {
+    "must_expose": [
+      "retrieval_selection_trace",
+      "intermediate_answer_trace",
+      "post_check_decision_trace"
+    ],
+    "must_clarify": [
+      "what was previously hidden",
+      "which stage now appears to fail first",
+      "why a deeper next move can now be chosen more responsibly"
+    ],
+    "visibility_quality_target": "stage_level_legibility_restored"
+  },
+  "expected_route_explanation_contract": {
+    "why_primary_not_secondary_must_express": [
+      "the system is still too opaque to diagnose correctly",
+      "diagnosability fails before execution closure becomes the primary repair target"
+    ],
+    "must_not_reduce_case_to": [
+      "generic workflow bug only",
+      "generic bad answer only",
+      "generic model weakness only"
+    ]
+  },
+  "expected_first_repair_move_contract": {
+    "must_include_repair_moves": [
+      "observability_insertion",
+      "trace_exposure",
+      "diagnostic_logging_uplift",
+      "failure_surface_clarification"
+    ],
+    "must_not_start_with": [
+      "large_workflow_rewrite",
+      "generic_prompt_overhaul",
+      "random_retry_loops",
+      "policy_change_without_trace"
+    ]
+  },
+  "expected_before_after_contract": {
+    "before_trace_state": "opaque",
+    "after_trace_state": "legible_enough_for_targeted_next_move",
+    "before_operator_position": "can_see_failure_but_not_failure_path",
+    "after_operator_position": "can_identify_a_plausible_failure_origin",
+    "required_change": "the repaired state must shift from hidden failure path to visible stage-level failure structure"
+  },
+  "expected_teaching_contract": {
+    "core_lesson": "If the system is still too opaque to diagnose, repair visibility first.",
+    "reader_should_learn": [
+      "not every bad output should be repaired at the answer layer first",
+      "some failures are diagnosability-first",
+      "correct routing changes the first repair move from intervention to visibility uplift"
+    ]
+  },
+  "optional_wfgy_escalation_contract": {
+    "default_needed": false,
+    "allowed_when": [
+      "improved trace still leaves multiple plausible failure origins unresolved",
+      "the system shows layered collapse or warning-surface instability",
+      "deeper structural analysis is needed after observability uplift"
+    ],
+    "handoff_order": [
+      "atlas_route",
+      "first_observability_repair",
+      "wfgy_escalation_if_needed"
+    ]
+  },
+  "validation_notes": {
+    "json_role": "target_structure_for_demo_success",
+    "notebook_required_for_understanding": false,
+    "replay_mode_is_sufficient_for_teaching": true,
+    "community_variants_may_change_surface_wording": true,
+    "community_variants_must_preserve": [
+      "F5 as primary family",
+      "F4 as secondary family",
+      "visibility-first repair logic",
+      "the shift from opaque failure path to legible failure path"
+    ]
+  },
+  "review_status": {
+    "schema_status": "ready",
+    "teaching_status": "ready",
+    "repair_contract_status": "ready",
+    "demo_alignment_status": "ready_for_notebook_and_fixture_checks"
+  }
+}

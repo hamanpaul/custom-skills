@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Broswer"
+  short_description: "Web research with source links and recency checks"
+  default_prompt: "請先上網搜尋並用至少一個可信來源佐證，最後附上來源連結與日期。"

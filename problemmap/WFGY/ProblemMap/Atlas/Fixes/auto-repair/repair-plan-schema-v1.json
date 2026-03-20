@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wfgy.dev/schemas/repair-plan-schema-v1.json",
+  "title": "Repair Plan Schema v1",
+  "description": "Schema for the first structured repair plan generated after Atlas routing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "selected_repair_family",
+    "planner_confidence",
+    "plan_scope",
+    "candidate_actions",
+    "action_ordering",
+    "primary_validation_target",
+    "misrepair_risk",
+    "recommended_next_step"
+  ],
+  "properties": {
+    "selected_repair_family": {
+      "type": "string",
+      "enum": ["F1", "F2", "F3", "F4", "F5", "F6", "F7"],
+      "description": "Repair family selected by the planner."
+    },
+    "planner_confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Planner confidence in the selected repair family and action set."
+    },
+    "plan_scope": {
+      "type": "string",
+      "enum": ["planner-only", "minimal", "constrained", "requires-review"],
+      "description": "Allowed intervention scope for the current repair plan."
+    },
+    "candidate_actions": {
+      "type": "array",
+      "description": "One to three candidate repair actions.",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/candidateAction"
+      }
+    },
+    "action_ordering": {
+      "type": "array",
+      "description": "Ordered short instructions for how candidate actions should be tried.",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "primary_validation_target": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The first thing that should be checked after the first action is tried."
+    },
+    "misrepair_risk": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The most likely wrong repair direction or failure mode."
+    },
+    "recommended_next_step": {
+      "type": "string",
+      "enum": [
+        "validate-first-action",
+        "revise-routing",
+        "escalate-to-review",
+        "escalate-to-wfgy",
+        "stop-and-wait",
+        "retry-with-alternate-action"
+      ],
+      "description": "The next operational step after the plan is produced."
+    },
+    "secondary_repair_pressure": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional note about neighboring family pressure affecting the repair plan."
+    },
+    "why_not_other_repair_family": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional explanation for why a neighboring repair family is not chosen first."
+    },
+    "escalation_reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional reason for escalation when the plan is not safe or sufficient."
+    },
+    "notes": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional planner note."
+    }
+  },
+  "$defs": {
+    "candidateAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_id",
+        "action_title"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "pattern": "^F[1-7]_[A-Z]{2,6}_[0-9]{3}$",
+          "description": "Stable identifier for the repair action."
+        },
+        "action_title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Short human-readable repair action title."
+        },
+        "target_family": {
+          "type": "string",
+          "enum": ["F1", "F2", "F3", "F4", "F5", "F6", "F7"],
+          "description": "Optional family target for the action if explicitly provided."
+        },
+        "target_region": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional node, branch, or region target."
+        },
+        "repair_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional repair mechanism type."
+        },
+        "intended_effect": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional intended effect of the action."
+        },
+        "allowed_scope": {
+          "type": "string",
+          "enum": ["planner-only", "minimal", "constrained", "requires-review"],
+          "description": "Optional action-level scope."
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Optional action-level risk."
+        },
+        "validation_needed": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional validation requirement for this action."
+        },
+        "rollback_hint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional rollback hint if this action causes damage."
+        },
+        "misrepair_risk": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional action-specific misrepair warning."
+        },
+        "preconditions": {
+          "type": "array",
+          "description": "Optional preconditions required before trying the action.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "escalation_if_failed": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional escalation path if this action fails."
+        }
+      }
+    }
+  }
+}

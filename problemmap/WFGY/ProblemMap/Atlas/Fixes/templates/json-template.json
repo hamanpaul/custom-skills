@@ -1,0 +1,94 @@
+{
+  "template_name": "Atlas Fix JSON Template",
+  "template_version": "v1",
+  "document_role": "community_fix_asset",
+  "title": "Replace with a short clear title",
+  "quick_summary": "Write 1 to 3 short sentences describing what this asset does.",
+  "artifact_type": [
+    "json_fixture"
+  ],
+  "atlas_routing_context": {
+    "primary_family": "F?",
+    "secondary_family": "None",
+    "broken_invariant": "Write one short sentence.",
+    "best_current_fit": "Write the nearest node, family entry, or edge-fit wording.",
+    "why_this_belongs_here": "Write 2 to 4 short sentences."
+  },
+  "problem_being_fixed": {
+    "description": "Describe the specific problem this asset targets.",
+    "visible_symptom": "Describe the visible symptom.",
+    "why_this_asset_is_useful": "Explain why a JSON asset is useful here."
+  },
+  "intended_use": {
+    "use_stage": "after_routing_before_or_after_first_repair",
+    "target_user": "human_or_ai_or_both",
+    "target_environment": "colab_cli_workflow_local_other",
+    "notes": "Optional short note."
+  },
+  "baseline_failure": {
+    "baseline_setup": "Describe the broken baseline.",
+    "broken_behavior": "Describe what goes wrong.",
+    "failure_note": "Optional short note."
+  },
+  "first_repair_move": {
+    "repair_action": "Describe the first repair move.",
+    "why_this_is_first": "Explain why this is the correct first move.",
+    "expected_improvement": "Explain what should improve."
+  },
+  "misrepair_warning": {
+    "wrong_first_move": "Describe one common wrong first move.",
+    "why_it_is_tempting": "Explain why people are tempted to do it.",
+    "why_it_is_wrong": "Explain why it is structurally wrong."
+  },
+  "inputs": {
+    "input_a": "Replace or remove.",
+    "input_b": "Replace or remove.",
+    "input_c": "Replace or remove."
+  },
+  "procedure": [
+    "Step 1",
+    "Step 2",
+    "Step 3"
+  ],
+  "expected_output_or_result": {
+    "before": "Describe the expected baseline state.",
+    "after": "Describe the expected improved state.",
+    "success_signal": "Describe the main success signal."
+  },
+  "optional_evaluation_fields": {
+    "metric_1": "Replace or remove.",
+    "metric_2": "Replace or remove.",
+    "metric_3": "Replace or remove."
+  },
+  "optional_wfgy_escalation": {
+    "used": false,
+    "when_to_escalate": "Replace if relevant.",
+    "what_to_pass_into_wfgy": {
+      "routed_family": "F?",
+      "broken_invariant": "Replace if relevant.",
+      "first_repair_already_attempted": "Replace if relevant.",
+      "unresolved_pressure": "Replace if relevant."
+    },
+    "what_wfgy_is_expected_to_add": "Replace if relevant."
+  },
+  "files_included": [
+    "Replace with included file names"
+  ],
+  "runtime_and_dependency_notes": {
+    "python_version": "Optional",
+    "runtime_type": "Optional",
+    "external_packages": [],
+    "internet_required": false,
+    "gpu_required": false,
+    "other_notes": "Optional"
+  },
+  "limitations": [
+    "Write one or more honest limitations."
+  ],
+  "maintainer_note": "Write one short line to help review this contribution.",
+  "review_status": {
+    "official_or_community": "community",
+    "merge_ready": false
+  }
+}
+

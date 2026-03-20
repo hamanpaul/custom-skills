@@ -1,0 +1,173 @@
+{
+  "version": "wfgy_debug_packet_v1",
+  "description": "Minimal case packet format for a single failing RAG or agent run aligned with WFGY RAG 16 Problem Map.",
+  "last_updated_utc": "2026-03-02T00:00:00Z",
+  "required_fields": [
+    "id",
+    "created_utc",
+    "environment",
+    "q",
+    "e",
+    "p",
+    "a"
+  ],
+  "optional_fields": [
+    "metrics",
+    "labels",
+    "triage_notes",
+    "fix_plan"
+  ],
+  "field_specs": {
+    "id": {
+      "description": "Stable unique identifier for this debug case.",
+      "example": "case-mlflow-2026-03-01-001"
+    },
+    "created_utc": {
+      "description": "ISO 8601 UTC timestamp when this debug packet was created.",
+      "example": "2026-03-01T12:34:56Z"
+    },
+    "environment": {
+      "description": "Source system and replay context.",
+      "properties": {
+        "system": {
+          "description": "High level system name.",
+          "example": "mlflow"
+        },
+        "project": {
+          "description": "Project or pipeline name.",
+          "example": "customer-support-rag"
+        },
+        "run_id": {
+          "description": "Native run identifier.",
+          "example": "4f2b1c7d9a"
+        },
+        "run_url": {
+          "description": "Optional link back to dashboard.",
+          "example": "https://mlflow.example.com/#/experiments/12/runs/4f2b1c7d9a"
+        },
+        "tags": {
+          "description": "Free form tags.",
+          "example": [
+            "env:staging",
+            "usecase:qna",
+            "priority:high"
+          ]
+        }
+      }
+    },
+    "q": {
+      "description": "User question.",
+      "example": "Summarize outstanding tickets for ACME Corp in the last 7 days."
+    },
+    "e": {
+      "description": "Top k retrieved evidence items.",
+      "example": [
+        {
+          "doc_id": "ticket-123",
+          "source": "zendesk",
+          "score": 0.84,
+          "text": "Ticket #123 from ACME Corp created on 2025-11-15.",
+          "meta": {
+            "chunk_index": 0,
+            "url": "https://support.acme.com/tickets/123"
+          }
+        }
+      ]
+    },
+    "p": {
+      "description": "Final prompt string sent to the model.",
+      "example": "You are a support analyst. Use the evidence below to summarize outstanding tickets for ACME Corp in the last 7 days."
+    },
+    "a": {
+      "description": "Model answer considered wrong or unsafe.",
+      "example": "There is 1 outstanding ticket for ACME Corp."
+    },
+    "metrics": {
+      "description": "Optional numeric signals.",
+      "properties": {
+        "delta_s": {
+          "description": "Delta S estimates.",
+          "example": {
+            "dS_QE": 0.78,
+            "dS_EP": 0.32,
+            "dS_PA": 0.41,
+            "dS_QA": 0.88
+          }
+        },
+        "zones": {
+          "description": "Zone labels.",
+          "example": {
+            "zone_QE": "risk",
+            "zone_EP": "transit",
+            "zone_PA": "transit",
+            "zone_QA": "danger"
+          }
+        },
+        "system": {
+          "description": "Host runtime metrics.",
+          "example": {
+            "latency_ms": 950,
+            "tokens_prompt": 2048,
+            "tokens_completion": 512
+          }
+        }
+      }
+    },
+    "labels": {
+      "description": "Failure classification.",
+      "properties": {
+        "primary_type": {
+          "description": "Primary failure type R, P, S, or I.",
+          "example": "R"
+        },
+        "secondary_types": {
+          "description": "Optional additional failure types.",
+          "example": ["P"]
+        },
+        "modes": {
+          "description": "Mode IDs from WFGY 16 Problem Map.",
+          "example": [1, 5]
+        },
+        "lane": {
+          "description": "Lane IN, RE, ST, or OP.",
+          "example": "IN"
+        },
+        "confidence": {
+          "description": "Confidence score between 0 and 1.",
+          "example": 0.82
+        },
+        "status": {
+          "description": "Lifecycle state raw, triaged, or fixed.",
+          "example": "triaged"
+        }
+      }
+    },
+    "triage_notes": {
+      "description": "Engineer notes.",
+      "example": "Evidence contains outdated tickets."
+    },
+    "fix_plan": {
+      "description": "Structured fix plan.",
+      "properties": {
+        "selected_modes": {
+          "description": "Modes targeted by fixes.",
+          "example": [1]
+        },
+        "fixes": {
+          "description": "Concrete structural changes.",
+          "example": [
+            "Restrict retrieval to last 7 days.",
+            "Add guardrail for empty result window."
+          ]
+        },
+        "verification_tests": {
+          "description": "Verification checks.",
+          "example": [
+            "Confirm all tickets are within 7 days.",
+            "Sample 5 similar queries."
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "demo_id": "demo_f1_grounding_anchor",
+  "demo_version": "v1",
+  "case_id": "f1_anchor_case_001",
+  "title": "Fluent answer attached to the wrong evidence anchor",
+  "task_type": "retrieval_grounded_qa",
+  "family_target": {
+    "primary_family": "F1",
+    "secondary_family": "F5",
+    "best_current_fit": "F1_N01 Retrieval Anchor Drift",
+    "broken_invariant": "evidence_anchor_integrity_broken"
+  },
+  "case_goal": "Show that a fluent but wrong answer can result from retrieval anchor drift and should be repaired through re_grounding rather than generic prompt tweaking.",
+  "user_question": "According to the official release notes, which product tier includes Semantic Refraction and Tension Field?",
+  "gold_answer": "Pro",
+  "evidence_context": {
+    "source_type": "product_release_table",
+    "notes": "Only one chunk directly states which tier includes Semantic Refraction and Tension Field. Another chunk is semantically similar but refers only to the Lite tier."
+  },
+  "chunks": [
+    {
+      "chunk_id": "chunk_001",
+      "label": "Lite tier overview",
+      "source_name": "release_timeline_table",
+      "relevance_role": "distractor_semantic_neighbor",
+      "text": "Lite includes Semantic Gravity Well, Quick Blah, Semantic Tree Memory, and TXT-Blah Blah Blah Lite with 50 answers. It is intended for beginners."
+    },
+    {
+      "chunk_id": "chunk_002",
+      "label": "Pro tier overview",
+      "source_name": "release_timeline_table",
+      "relevance_role": "correct_anchor",
+      "text": "Pro includes all Lite features plus Semantic Refraction, Tension Field, and Orbital Drift of Meaning."
+    },
+    {
+      "chunk_id": "chunk_003",
+      "label": "General product summary",
+      "source_name": "marketing_summary",
+      "relevance_role": "broad_context",
+      "text": "The product line includes multiple tiers for different user groups, from beginner-friendly entry versions to more advanced structured reasoning editions."
+    }
+  ],
+  "baseline_failure_setup": {
+    "retrieved_chunk_order": [
+      "chunk_001",
+      "chunk_003",
+      "chunk_002"
+    ],
+    "observed_failure_pattern": "The system answers fluently but attaches the answer to a semantically adjacent chunk instead of the true evidence anchor.",
+    "likely_wrong_baseline_answer": "Lite",
+    "why_baseline_can_fail": [
+      "The first retrieved chunk is semantically related but does not contain the answer.",
+      "The correct chunk appears later and may be ignored or weakly weighted.",
+      "The model can generate a plausible answer from nearby product language without verifying the exact feature-to-tier link."
+    ]
+  },
+  "repair_intent": {
+    "first_repair_move": [
+      "chunk_to_target_trace",
+      "evidence_verification",
+      "anchor_recheck",
+      "re_grounding_pass"
+    ],
+    "do_not_start_with": [
+      "style_rewrite",
+      "confidence_rewrite",
+      "longer_chain_of_thought",
+      "generic_be_more_careful_prompt"
+    ]
+  },
+  "why_not_neighbor": {
+    "not_primary_f5": "The first failure is not merely that the path is hard to inspect. The first failure is that the answer attaches to the wrong evidence source.",
+    "f5_pressure_exists": true,
+    "f5_pressure_note": "If retrieval logs or evidence selection are hidden, diagnosability pressure exists, but grounding still fails first."
+  },
+  "replay_requirements": {
+    "must_show": [
+      "user_question",
+      "retrieved_chunk_order",
+      "correct_anchor_chunk",
+      "likely_wrong_baseline_answer",
+      "gold_answer",
+      "family_target",
+      "first_repair_move"
+    ],
+    "teaching_focus": "Not all fluent wrong answers are generic hallucinations. Some are evidence-anchor failures first."
+  },
+  "live_rerun_requirements": {
+    "api_key_needed": true,
+    "api_key_mode": "runtime_input_only",
+    "mandatory_for_understanding": false,
+    "notes": "Live mode is optional. The core concept should remain understandable from the README and replay artifacts alone."
+  },
+  "community_extension_hints": {
+    "safe_variations": [
+      "swap in a different grounded QA question",
+      "change retrieval order",
+      "add another semantically similar distractor",
+      "compare naive prompting against re_grounding"
+    ],
+    "do_not_change_first": [
+      "the primary_family target",
+      "the evidence-anchor teaching pattern",
+      "the distinction between correct anchor and distractor chunk"
+    ]
+  },
+  "review_status": {
+    "schema_status": "draft_ready",
+    "routing_status": "f1_teaching_case_aligned",
+    "fixture_status": "ready_for_replay_outputs_and_expected_output"
+  }
+}

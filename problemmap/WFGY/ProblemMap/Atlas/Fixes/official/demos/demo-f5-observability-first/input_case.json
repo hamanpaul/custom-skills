@@ -1,0 +1,105 @@
+{
+  "demo_id": "demo_f5_observability_first",
+  "demo_version": "v1",
+  "case_id": "f5_observability_case_001",
+  "title": "A failing workflow remains too opaque to diagnose correctly",
+  "task_type": "workflow_debugging_visibility_case",
+  "family_target": {
+    "primary_family": "F5",
+    "secondary_family": "F4",
+    "best_current_fit": "F5_N01 Failure Path Opacity",
+    "broken_invariant": "failure_path_visibility_broken"
+  },
+  "case_goal": "Show that some failures should be repaired through observability first, because the main problem is not yet execution closure itself but the inability to see the failure path clearly enough to intervene correctly.",
+  "workflow_context": {
+    "workflow_name": "three_step_answer_pipeline",
+    "workflow_description": "A small pipeline retrieves context, generates a candidate answer, and then applies a post-check step. The final output is unstable, but the trace is too thin to determine where the failure begins.",
+    "intended_steps": [
+      "retrieve_context",
+      "generate_answer",
+      "post_check"
+    ]
+  },
+  "baseline_visible_artifacts": {
+    "user_question": "Which product tier includes Semantic Refraction and Tension Field?",
+    "final_output": "Lite includes those features.",
+    "visible_logs": [
+      "pipeline_started",
+      "pipeline_completed"
+    ],
+    "missing_visibility": [
+      "retrieval_selection_trace",
+      "intermediate_answer_trace",
+      "post_check_decision_trace",
+      "step_level_failure_reason"
+    ]
+  },
+  "baseline_failure_setup": {
+    "observed_failure_pattern": "The output is wrong, but the current system surface is too thin to tell whether the primary failure comes from retrieval selection, answer generation, or post-check behavior.",
+    "why_baseline_is_f5_teaching_case": [
+      "The operator can see that the result is bad.",
+      "The operator cannot yet see the failure path clearly enough to choose the right deeper repair.",
+      "Prematurely treating the case as execution-first would skip the visibility problem."
+    ],
+    "tempting_wrong_reactions": [
+      "rewrite the whole workflow immediately",
+      "change the prompt without exposing the path",
+      "retry with a stronger model",
+      "assume the system has an execution bug without enough trace evidence"
+    ]
+  },
+  "repair_intent": {
+    "first_repair_move": [
+      "observability_insertion",
+      "trace_exposure",
+      "diagnostic_logging_uplift",
+      "failure_surface_clarification"
+    ],
+    "do_not_start_with": [
+      "large_workflow_rewrite",
+      "generic_prompt_overhaul",
+      "policy_change_without_trace",
+      "random_retry_loops"
+    ]
+  },
+  "why_not_neighbor": {
+    "not_primary_f4": "Execution pressure may exist, but the first practical failure is that the system does not expose enough structure to know what to repair correctly.",
+    "f4_pressure_exists": true,
+    "f4_pressure_note": "If better visibility later shows a broken readiness gate, ordering path, or bridge, the case may escalate toward F4. But the flagship teaching cut remains F5-first."
+  },
+  "replay_requirements": {
+    "must_show": [
+      "workflow_description",
+      "baseline_visible_artifacts",
+      "missing_visibility",
+      "family_target",
+      "first_repair_move",
+      "why_not_neighbor"
+    ],
+    "teaching_focus": "Some failures should be repaired through observability first because you still cannot see enough of the failure path to make a correct deeper intervention."
+  },
+  "live_rerun_requirements": {
+    "api_key_needed": false,
+    "api_key_mode": "not_required_for_minimal_replay_demo",
+    "mandatory_for_understanding": false,
+    "notes": "The flagship F5 teaching version can work entirely through replay artifacts and synthetic trace uplift. A live model call may be added later, but it is not required for the MVP teaching version."
+  },
+  "community_extension_hints": {
+    "safe_variations": [
+      "replace the workflow with a tool-calling chain",
+      "add intermediate traces with different levels of detail",
+      "compare thin logging versus upgraded observability",
+      "extend the case into a stronger F5-to-F4 escalation example"
+    ],
+    "do_not_change_first": [
+      "the primary_family target",
+      "the idea that visibility fails before deeper repair can be trusted",
+      "the contrast between opaque baseline and more legible repaired state"
+    ]
+  },
+  "review_status": {
+    "schema_status": "draft_ready",
+    "routing_status": "f5_teaching_case_aligned",
+    "fixture_status": "ready_for_replay_outputs_and_expected_output"
+  }
+}

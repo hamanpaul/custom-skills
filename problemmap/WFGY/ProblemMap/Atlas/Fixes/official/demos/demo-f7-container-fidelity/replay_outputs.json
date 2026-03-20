@@ -1,0 +1,135 @@
+{
+  "demo_id": "demo_f7_container_fidelity",
+  "demo_version": "v1",
+  "case_id": "f7_container_case_001",
+  "replay_mode": "official_static_replay",
+  "summary": {
+    "baseline_outcome": "The content is partially correct, but the output shell is too weak to preserve the required structure, so the result becomes unstable as a carrier of the task.",
+    "atlas_route": {
+      "primary_family": "F7",
+      "secondary_family": "F2",
+      "best_current_fit": "F7_N01_B Formal Container Adequacy Failure",
+      "broken_invariant": "representation_container_fidelity_broken"
+    },
+    "first_repair_move": [
+      "descriptor_fidelity_audit",
+      "formal_adequacy_validation",
+      "container_tightening",
+      "structure_preservation_check",
+      "reassess_reasoning_after_container_repair"
+    ],
+    "final_outcome": "After the descriptor and formal container are tightened, the answer becomes structurally trustworthy enough to carry the task requirements."
+  },
+  "baseline_snapshot": {
+    "task_name": "structured_release_note_extraction",
+    "user_question": "Return the answer as a strict JSON object. Which product tier includes Semantic Refraction and Tension Field?",
+    "baseline_output": "The answer is probably Pro. {\"tier_guess\":\"Pro\",\"features\":\"Semantic Refraction, Tension Field\"}",
+    "container_state": "weak_or_underconstrained",
+    "why_this_is_bad": [
+      "The output contains extra prose outside the intended object.",
+      "Required keys are missing or renamed.",
+      "The features field collapses an array requirement into a single string.",
+      "The answer may be semantically near-correct, but the structure carrier fails to preserve the required form."
+    ]
+  },
+  "route_replay": {
+    "why_primary_f7": "The first failure is not inferential progression inside a stable shell. The first failure is that the shell itself is too weak to preserve the required structure.",
+    "why_not_primary_f2": "The output does not first demonstrate a stable container with a bad reasoning path. It demonstrates a leaking or underspecified formal carrier.",
+    "teaching_line": "Some reasoning-looking failures are container-first. If the shell is weak, repair the shell first."
+  },
+  "repair_replay": {
+    "step_1_descriptor_fidelity_audit": {
+      "action": "Compare the intended structure against the actual prompt shell and output form.",
+      "result": "The baseline descriptor is shown to be too weak to enforce the required distinctions and field boundaries."
+    },
+    "step_2_formal_adequacy_validation": {
+      "action": "Check whether the required object structure is explicit enough to carry the task.",
+      "result": "The current carrier is shown to be inadequate because key names, output boundaries, and array constraints are not reliably preserved."
+    },
+    "step_3_container_tightening": {
+      "action": "Tighten the shell by specifying the required keys, forbidding extra prose, and enforcing exact structural constraints.",
+      "result": "The system now has a stronger formal container for the same task."
+    },
+    "step_4_structure_preservation_check": {
+      "action": "Re-evaluate the output under the tightened container.",
+      "result": "The returned structure now remains inside a valid JSON object with the expected field boundaries."
+    },
+    "step_5_reassess_reasoning_after_container_repair": {
+      "action": "Only after the container holds, inspect whether any remaining issue is truly reasoning pressure.",
+      "result": "The main instability is resolved at the container layer before deeper progression concerns need to be invoked."
+    }
+  },
+  "improved_container_snapshot": {
+    "tightened_descriptor": {
+      "format": "json_object",
+      "required_keys": [
+        "tier",
+        "features_requested",
+        "evidence_status",
+        "final_answer"
+      ],
+      "forbidden_patterns": [
+        "extra_prose_outside_object",
+        "missing_required_keys",
+        "features_as_single_string"
+      ]
+    },
+    "improved_output": {
+      "tier": "Pro",
+      "features_requested": [
+        "Semantic Refraction",
+        "Tension Field"
+      ],
+      "evidence_status": "directly_supported_by_source_note",
+      "final_answer": "Pro"
+    },
+    "new_container_value": [
+      "The output now remains inside the required object boundary.",
+      "The required keys are preserved with stable names.",
+      "The feature list is now carried in the intended array form.",
+      "The task becomes structurally trustworthy enough to support later interpretation."
+    ]
+  },
+  "before_after_comparison": {
+    "before": {
+      "output_state": "partly_correct_content_inside_broken_shell",
+      "container_state": "leaky_and_underconstrained",
+      "repair_state": "unrepaired",
+      "operator_position": "may_blame_reasoning_without_seeing_that_the_form_is_failing_first"
+    },
+    "after": {
+      "output_state": "structured_answer_inside_valid_shell",
+      "container_state": "tightened_and_task_adequate",
+      "repair_state": "container_repaired",
+      "operator_position": "can_now_treat_remaining_issues_as_possible_downstream_reasoning_pressure_only_after_the_shell_holds"
+    },
+    "what_changed": [
+      "The first improvement is not deeper reasoning text. The first improvement is that the answer now lives inside a reliable structure carrier.",
+      "The operator moves from seeing a messy answer to seeing that the shell itself was the first failure point.",
+      "The repaired state becomes suitable for later reasoning evaluation because the carrier no longer leaks."
+    ]
+  },
+  "visible_lesson": {
+    "what_users_should_notice": [
+      "The baseline output is not pure nonsense. It contains useful content inside a broken shell.",
+      "Atlas routing changes the first repair move from reasoning pressure to container repair.",
+      "After the shell is repaired, the same task becomes much more stable and auditable."
+    ],
+    "core_message": "If the box carrying the structure is weak, repair the box first."
+  },
+  "optional_wfgy_escalation": {
+    "escalation_needed": false,
+    "when_to_escalate": [
+      "If container tightening still leaves nested structural instability.",
+      "If multiple representational regimes need to be compared experimentally.",
+      "If the case still fails after formal adequacy is restored and deeper progression pressure remains."
+    ],
+    "handoff_note": "Use WFGY 3.0 only after route-first diagnosis and first container repair have already made the task structurally stable enough to escalate responsibly."
+  },
+  "review_status": {
+    "replay_clarity": "ready",
+    "route_alignment": "ready",
+    "repair_alignment": "ready",
+    "notebook_dependency": "not_required_for_understanding"
+  }
+}

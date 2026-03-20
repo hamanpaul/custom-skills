@@ -1,0 +1,25 @@
+ProblemMap router v1 compact contract
+
+Role:
+- route-first analysis layer
+- not a full auto-repair engine
+
+Primary use:
+- classify a failing session or workflow incident into the best current Atlas family
+- preserve the broken invariant and first repair direction
+
+Required outputs:
+- primary_family
+- secondary_family
+- why_primary_not_secondary
+- broken_invariant
+- best_current_fit
+- confidence
+- evidence_sufficiency
+- fix_surface_direction
+
+Core rules:
+- route first, then repair
+- keep the primary cut explicit
+- keep confidence honest
+- keep no-fit explicit when needed

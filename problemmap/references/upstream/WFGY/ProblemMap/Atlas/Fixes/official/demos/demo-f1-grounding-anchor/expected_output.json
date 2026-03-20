@@ -1,0 +1,104 @@
+{
+  "demo_id": "demo_f1_grounding_anchor",
+  "demo_version": "v1",
+  "case_id": "f1_anchor_case_001",
+  "expected_result_type": "route_first_repair_demo",
+  "minimum_success_contract": {
+    "primary_family": "F1",
+    "secondary_family": "F5",
+    "best_current_fit": "F1_N01 Retrieval Anchor Drift",
+    "broken_invariant": "evidence_anchor_integrity_broken",
+    "fit_level": "node_level",
+    "confidence": "medium_or_higher",
+    "evidence_sufficiency": "sufficient_for_grounding_diagnosis"
+  },
+  "expected_answer_contract": {
+    "short_answer": "Pro",
+    "full_answer_must_include": [
+      "Pro",
+      "Semantic Refraction",
+      "Tension Field"
+    ],
+    "answer_must_not_claim": [
+      "Lite includes Semantic Refraction",
+      "Lite includes Tension Field"
+    ],
+    "answer_quality_target": "directly_grounded_to_correct_anchor"
+  },
+  "expected_anchor_contract": {
+    "correct_anchor_chunk": "chunk_002",
+    "anchor_status": "correct_anchor",
+    "anchor_reason": "chunk_002 is the only chunk that directly links Semantic Refraction and Tension Field to the Pro tier"
+  },
+  "expected_route_explanation_contract": {
+    "why_primary_not_secondary_must_express": [
+      "the answer attached to the wrong evidence source",
+      "grounding fails before diagnosability becomes the primary issue"
+    ],
+    "must_not_reduce_case_to": [
+      "generic hallucination only",
+      "generic reasoning failure only",
+      "pure black-box debugging only"
+    ]
+  },
+  "expected_first_repair_move_contract": {
+    "must_include_repair_moves": [
+      "chunk_to_target_trace",
+      "evidence_verification",
+      "anchor_recheck",
+      "re_grounding_pass"
+    ],
+    "must_not_start_with": [
+      "style_rewrite",
+      "confidence_rewrite",
+      "generic_be_more_careful_prompt",
+      "longer_chain_of_thought"
+    ]
+  },
+  "expected_before_after_contract": {
+    "before_anchor_chunk": "chunk_001",
+    "after_anchor_chunk": "chunk_002",
+    "before_answer_label": "wrong_but_plausible",
+    "after_answer_label": "directly_grounded",
+    "required_change": "the repaired output must shift from semantically adjacent guessing to direct evidence anchoring"
+  },
+  "expected_teaching_contract": {
+    "core_lesson": "If the anchor is wrong, repair the anchor first.",
+    "reader_should_learn": [
+      "not every fluent wrong answer is the same kind of failure",
+      "some failures are grounding-first",
+      "correct routing changes the first repair move"
+    ]
+  },
+  "optional_wfgy_escalation_contract": {
+    "default_needed": false,
+    "allowed_when": [
+      "the answer still drifts after obvious re_grounding",
+      "multiple chunks partially overlap and anchor stability remains weak",
+      "deeper target_proxy separation analysis is needed"
+    ],
+    "handoff_order": [
+      "atlas_route",
+      "first_repair_move",
+      "wfgy_escalation_if_needed"
+    ]
+  },
+  "validation_notes": {
+    "json_role": "target_structure_for_demo_success",
+    "notebook_required_for_understanding": false,
+    "replay_mode_is_sufficient_for_teaching": true,
+    "community_variants_may_change_surface_wording": true,
+    "community_variants_must_preserve": [
+      "F1 as primary family",
+      "F5 as secondary family",
+      "correct anchor recovery to chunk_002 or equivalent true anchor",
+      "route_first_repair logic"
+    ]
+  },
+  "review_status": {
+    "schema_status": "ready",
+    "teaching_status": "ready",
+    "repair_contract_status": "ready",
+    "demo_alignment_status": "ready_for_notebook_and_fixture_checks"
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "version": "wfgy_problem_catalog_v1",
+  "description": "Machine-readable problem catalog for the WFGY RAG 16 Problem Map. Wave 0 focuses on modes 1, 2, 5, and 8.",
+  "last_updated_utc": "2026-03-02T00:00:00Z",
+  "lanes": {
+    "IN": {
+      "name": "input_retrieval",
+      "description": "Retrieval, input preparation, and evidence selection."
+    },
+    "RE": {
+      "name": "reasoning_planning",
+      "description": "Reasoning, interpretation of evidence, and planning."
+    },
+    "ST": {
+      "name": "state_context",
+      "description": "State, memory, and long-context behavior."
+    },
+    "OP": {
+      "name": "infra_deploy",
+      "description": "Infrastructure, deployment, and environment setup."
+    }
+  },
+  "types": {
+    "R": {
+      "name": "retrieval",
+      "description": "The primary issue is in retrieval or input selection."
+    },
+    "P": {
+      "name": "prompt_reasoning",
+      "description": "The primary issue is in prompting, reasoning, or interpretation."
+    },
+    "S": {
+      "name": "state_memory",
+      "description": "The primary issue is in state, memory, or multi-run behavior."
+    },
+    "I": {
+      "name": "infra",
+      "description": "The primary issue is in infra, deployment, or observability."
+    }
+  },
+  "wave0_scope": {
+    "description": "Wave 0 focuses on modes that are both observable and suitable for constrained automated repair loops.",
+    "modes": [1, 2, 5, 8]
+  },
+  "modes": [
+    {
+      "id": 1,
+      "code": "IN-1",
+      "short_name": "retrieval_hallucination_drift",
+      "lane": "IN",
+      "default_type": "R",
+      "labels": {
+        "title": "Hallucination / drift with wrong or off-topic evidence",
+        "symptom": "Retrieved evidence E is wrong, off-topic, or misaligned with Q. The answer A confidently follows the bad evidence."
+      },
+      "signals": {
+        "primary": [
+          "Q and E describe different topics, entities, or time ranges.",
+          "A is reasonably consistent with E but inconsistent with the true intent of Q.",
+          "Changing retrieval parameters or index often changes the failure pattern significantly."
+        ],
+        "secondary": [
+          "ΔS(Q, E) is in a high-risk or danger zone when embeddings are available.",
+          "Small changes to Q cause large jumps in which documents are retrieved.",
+          "The system returns outdated or wrong-tenant documents even when the correct documents exist in the index."
+        ]
+      },
+      "failure_pattern": {
+        "type_hint": "R",
+        "description": "The model is not purely inventing answers. It is aligning to the evidence it sees, but the evidence itself is wrong or irrelevant."
+      },
+      "fix_focus": [
+        "Review retrieval configuration: index, filters, top-k, and scoring.",
+        "Check coverage: ensure that relevant documents actually exist and are indexed.",
+        "Add or refine routing / query rewrite rules for high-risk queries.",
+        "Introduce sanity checks when E and Q clearly refer to different topics or time windows."
+      ],
+      "verification_hints": [
+        "Re-run the same Q after retrieval changes and confirm that E now contains the correct or much closer documents.",
+        "Check that A no longer cites off-topic or outdated documents.",
+        "Track how often ΔS(Q, E) moves from risk/danger into safe/transit zones after the fix, if embeddings are available."
+      ],
+      "automation": {
+        "wave0_supported": true,
+        "automation_notes": [
+          "Good candidate for automated top-k sweeps, query rewrite experiments, and retrieval configuration search.",
+          "Can be paired with a simple verification loop that checks whether the retrieved documents are on-topic before generating A."
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "code": "RE-2",
+      "short_name": "misread_evidence",
+      "lane": "RE",
+      "default_type": "P",
+      "labels": {
+        "title": "Misread or misinterpreted evidence",
+        "symptom": "Evidence E is relevant and mostly correct, but the answer A misreads, overstates, or ignores key parts of E."
+      },
+      "signals": {
+        "primary": [
+          "E contains the correct information, but A contradicts or distorts it.",
+          "A selectively quotes E but ignores conditions, caveats, or time ranges.",
+          "A blends multiple pieces of evidence into an answer that does not match any single source."
+        ],
+        "secondary": [
+          "When asked to explicitly quote sources or cite specific sentences, the model improves significantly.",
+          "Rephrasing Q as a verification or comparison question reduces the error rate.",
+          "The same E, when inspected by a human, is enough to answer correctly."
+        ]
+      },
+      "failure_pattern": {
+        "type_hint": "P",
+        "description": "The retrieval step did its job. The failure arises from how the model reads, weighs, or uses the evidence."
+      },
+      "fix_focus": [
+        "Switch to evidence-first answer patterns: quote or summarize E before making claims.",
+        "Enforce citation-before-claim or similar constraints in the prompt template.",
+        "Ask the model to enumerate candidate answers with supporting spans from E before choosing a final answer.",
+        "Reduce room for speculation by tightening instructions around what counts as an acceptable answer."
+      ],
+      "verification_hints": [
+        "Check that A now includes explicit links to spans or sentences in E.",
+        "Compare old vs new answers and confirm that contradictions with E are reduced.",
+        "Use spot checks where humans verify that A no longer adds unsupported claims beyond E."
+      ],
+      "automation": {
+        "wave0_supported": true,
+        "automation_notes": [
+          "Good candidate for constrained prompt repair and template-level changes.",
+          "Pairs well with automatic checks that require each major claim to reference a specific part of E."
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "code": "IN-5",
+      "short_name": "embedding_false_positive",
+      "lane": "IN",
+      "default_type": "R",
+      "labels": {
+        "title": "Embedding false positive",
+        "symptom": "Similarity scores between Q and E are high, but E is semantically off or irrelevant when inspected by humans."
+      },
+      "signals": {
+        "primary": [
+          "E has high embedding scores relative to Q but looks wrong or off-topic on manual inspection.",
+          "Retrieval often returns near-duplicate or overly generic documents instead of specific, relevant ones.",
+          "Changing the embedding model or normalization changes which documents appear, even with the same index and Q."
+        ],
+        "secondary": [
+          "Similar failure patterns show up across many queries using the same embedding model.",
+          "Reranking with a different model improves relevance without changing the base retriever.",
+          "Chunking strategies and document boundaries strongly influence which false positives appear."
+        ]
+      },
+      "failure_pattern": {
+        "type_hint": "R",
+        "description": "The similarity geometry is misleading. The distance metric or embedding representation is pulling in the wrong neighbors."
+      },
+      "fix_focus": [
+        "Review embedding model choice and consider a more domain-aligned model.",
+        "Apply normalization or scaling strategies that better separate relevant vs irrelevant candidates.",
+        "Tune chunking granularity to avoid mixing multiple topics into a single chunk.",
+        "Introduce a reranking step that can reject semantically off-target results even when similarity is high."
+      ],
+      "verification_hints": [
+        "Measure how often clearly off-topic chunks appear in the top-k set before and after changes.",
+        "Track relevance labels (even if weak) to verify fewer embedding-driven false positives.",
+        "Check that domain-specific queries now retrieve documents that match terminology and intent more precisely."
+      ],
+      "automation": {
+        "wave0_supported": true,
+        "automation_notes": [
+          "Suitable for automated experiments that compare different embedding models, normalization schemes, and rerankers.",
+          "Can be combined with a small labeled or heuristic relevance set to automatically score before/after changes."
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "code": "IN-8",
+      "short_name": "no_evidence_visibility",
+      "lane": "IN",
+      "default_type": "I",
+      "labels": {
+        "title": "No evidence visibility",
+        "symptom": "The system cannot reliably inspect or log E. Evidence is missing, truncated, or invisible to the debugging process."
+      },
+      "signals": {
+        "primary": [
+          "Logs or traces do not include the retrieved evidence, only the final answer A.",
+          "Different runs appear to produce different answers without a clear view of which E was used.",
+          "Production systems use retrieval, but no stable mechanism exists to see what was actually retrieved."
+        ],
+        "secondary": [
+          "Replaying the same Q in a controlled environment yields different or non-reproducible behavior.",
+          "Monitoring shows calls to a retriever service, but payloads are not recorded.",
+          "Engineers cannot easily attach E when filing a bug report for a bad answer."
+        ]
+      },
+      "failure_pattern": {
+        "type_hint": "I",
+        "description": "The main obstacle is observability. Retrieval may be fine or broken, but there is no reliable way to see or export E."
+      },
+      "fix_focus": [
+        "Add structured logging or tracing for E with appropriate privacy and security controls.",
+        "Standardize a minimal case packet that always includes Q, E, P, and A for debugging.",
+        "Ensure that tracing covers all relevant environments: dev, staging, and production.",
+        "Introduce feature flags that allow temporary deep logging for high-value incidents."
+      ],
+      "verification_hints": [
+        "Confirm that new logs contain Q, E, P, and A in a reproducible format.",
+        "Check that a failing production case can be exported into a single case JSON and replayed.",
+        "Ensure that teams can now share minimal failure packets without screenshots or ad-hoc copy/paste."
+      ],
+      "automation": {
+        "wave0_supported": true,
+        "automation_notes": [
+          "Good candidate for automated checks that validate whether Q, E, P, and A are present in tracing payloads.",
+          "Pairs well with CI or canary tests that ensure critical routes always emit a minimal debug packet when enabled."
+        ]
+      }
+    }
+  ]
+}

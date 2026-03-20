@@ -1,0 +1,108 @@
+{
+  "demo_id": "demo_f1_grounding_anchor",
+  "demo_version": "v1",
+  "case_id": "f1_anchor_case_001",
+  "replay_mode": "official_static_replay",
+  "summary": {
+    "baseline_outcome": "The answer is fluent but attached to the wrong evidence anchor.",
+    "atlas_route": {
+      "primary_family": "F1",
+      "secondary_family": "F5",
+      "best_current_fit": "F1_N01 Retrieval Anchor Drift",
+      "broken_invariant": "evidence_anchor_integrity_broken"
+    },
+    "first_repair_move": [
+      "chunk_to_target_trace",
+      "evidence_verification",
+      "anchor_recheck",
+      "re_grounding_pass"
+    ],
+    "final_outcome": "After re-grounding to the correct evidence chunk, the answer shifts from Lite to Pro."
+  },
+  "baseline_snapshot": {
+    "user_question": "According to the official release notes, which product tier includes Semantic Refraction and Tension Field?",
+    "retrieved_chunk_order": [
+      "chunk_001",
+      "chunk_003",
+      "chunk_002"
+    ],
+    "model_focus_pattern": "The system locks onto the first semantically adjacent chunk and answers before verifying the exact feature-to-tier mapping.",
+    "baseline_answer": {
+      "text": "Lite includes those features.",
+      "confidence_style": "fluent_but_unverified",
+      "anchor_chunk_used": "chunk_001",
+      "anchor_status": "wrong_anchor"
+    },
+    "why_this_is_wrong": [
+      "chunk_001 mentions the Lite tier but does not contain Semantic Refraction or Tension Field.",
+      "chunk_002 is the only chunk that explicitly links Semantic Refraction and Tension Field to Pro.",
+      "The answer sounds plausible because the Lite chunk is topically adjacent, but it is not the true evidence anchor."
+    ]
+  },
+  "route_replay": {
+    "why_primary_f1": "The first failure is that the answer attaches to the wrong evidence source. This is a grounding failure before it is a diagnosability failure.",
+    "why_not_primary_f5": "F5 pressure exists because retrieval selection may be hard to inspect, but the first broken layer is still the evidence-anchor link itself.",
+    "teaching_line": "Not every fluent wrong answer is generic hallucination. Some are evidence-anchor failures first."
+  },
+  "repair_replay": {
+    "step_1_chunk_to_target_trace": {
+      "action": "Compare the claimed answer against each retrieved chunk.",
+      "result": "Only chunk_002 explicitly supports the feature-to-tier mapping in the user question."
+    },
+    "step_2_evidence_verification": {
+      "action": "Verify whether the baseline answer is directly grounded in a chunk that actually contains the requested fact.",
+      "result": "The baseline answer is not directly supported by chunk_001."
+    },
+    "step_3_anchor_recheck": {
+      "action": "Re-rank or re-select the chunk that directly answers the question.",
+      "result": "chunk_002 becomes the active anchor."
+    },
+    "step_4_re_grounding_pass": {
+      "action": "Regenerate the answer using the corrected anchor.",
+      "result": "The answer now points to Pro."
+    }
+  },
+  "before_after_comparison": {
+    "before": {
+      "answer": "Lite includes those features.",
+      "anchor_chunk": "chunk_001",
+      "anchor_quality": "semantically_adjacent_but_incorrect",
+      "repair_state": "unrepaired"
+    },
+    "after": {
+      "answer": "Pro includes all Lite features plus Semantic Refraction, Tension Field, and Orbital Drift of Meaning.",
+      "short_answer": "Pro",
+      "anchor_chunk": "chunk_002",
+      "anchor_quality": "direct_evidence_anchor",
+      "repair_state": "re_grounded"
+    },
+    "what_changed": [
+      "The answer changed from a semantically adjacent guess to a directly grounded answer.",
+      "The repair did not start from style or reasoning expansion.",
+      "The repair started from evidence-anchor correction."
+    ]
+  },
+  "visible_lesson": {
+    "what_users_should_notice": [
+      "The baseline answer is not random nonsense. It is a plausible answer attached to the wrong chunk.",
+      "Atlas routing changes the repair move immediately.",
+      "Once the correct evidence anchor is restored, the answer becomes stable and simple."
+    ],
+    "core_message": "If the anchor is wrong, repair the anchor first."
+  },
+  "optional_wfgy_escalation": {
+    "escalation_needed": false,
+    "when_to_escalate": [
+      "If the answer continues drifting after obvious re-grounding.",
+      "If multiple chunks partially overlap and the target-reference link stays unstable.",
+      "If the case needs deeper target-proxy separation analysis."
+    ],
+    "handoff_note": "Use WFGY 3.0 only after route-first diagnosis and first repair move are already clear."
+  },
+  "review_status": {
+    "replay_clarity": "ready",
+    "route_alignment": "ready",
+    "repair_alignment": "ready",
+    "notebook_dependency": "not_required_for_understanding"
+  }
+}

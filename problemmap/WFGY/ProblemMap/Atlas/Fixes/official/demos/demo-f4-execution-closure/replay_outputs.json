@@ -1,0 +1,128 @@
+{
+  "demo_id": "demo_f4_execution_closure",
+  "demo_version": "v1",
+  "case_id": "f4_execution_case_001",
+  "replay_mode": "official_static_replay",
+  "summary": {
+    "baseline_outcome": "The workflow advances into answer generation before the upstream retrieval stage is actually ready, producing a fluent but structurally invalid result.",
+    "atlas_route": {
+      "primary_family": "F4",
+      "secondary_family": "F3",
+      "best_current_fit": "F4_N03 Pre-Readiness Execution Failure",
+      "broken_invariant": "execution_skeleton_closure_broken"
+    },
+    "first_repair_move": [
+      "readiness_validation",
+      "ordering_validation",
+      "bridge_integrity_check",
+      "closure_path_trace",
+      "liveness_repair_if_needed"
+    ],
+    "final_outcome": "After readiness and closure checks are restored, answer generation no longer runs on an invalid upstream state, and the workflow becomes structurally valid enough to proceed."
+  },
+  "baseline_snapshot": {
+    "workflow_name": "retrieve_then_answer_pipeline",
+    "user_question": "Which product tier includes Semantic Refraction and Tension Field?",
+    "retrieval_status": "empty_or_invalid_result",
+    "generation_status": "still_executed",
+    "baseline_answer": {
+      "text": "Lite includes those features.",
+      "confidence_style": "fluent_but_structurally_premature",
+      "execution_state": "downstream_ran_without_readiness"
+    },
+    "why_this_is_bad": [
+      "The retrieval stage did not produce a valid evidence anchor before answer generation started.",
+      "The workflow still advanced into downstream execution.",
+      "The visible failure looks like a bad answer, but the earlier failure is that execution closure was broken."
+    ]
+  },
+  "route_replay": {
+    "why_primary_f4": "The first broken layer is the workflow skeleton itself. The system advances before a required upstream condition is satisfied, so execution closure fails before continuity becomes the primary repair target.",
+    "why_not_primary_f3": "The baseline does not first show lost memory or broken state persistence. It first shows a workflow that moves ahead without readiness.",
+    "teaching_line": "Some failures should be repaired through execution closure first, because the system moved forward before it was actually ready."
+  },
+  "repair_replay": {
+    "step_1_readiness_validation": {
+      "action": "Check whether retrieval produced a valid evidence anchor before answer generation is allowed to run.",
+      "result": "The workflow is shown to be missing a real readiness gate."
+    },
+    "step_2_ordering_validation": {
+      "action": "Verify that answer generation only occurs after retrieval success is confirmed.",
+      "result": "The original workflow order is revealed to be structurally unsafe."
+    },
+    "step_3_bridge_integrity_check": {
+      "action": "Confirm that the retrieval output is valid and usable as the downstream input.",
+      "result": "The bridge between retrieval and answer generation is shown to be functionally broken."
+    },
+    "step_4_closure_path_trace": {
+      "action": "Expose the dependency path from retrieval to validation to generation.",
+      "result": "The operator can now see exactly where closure was skipped."
+    },
+    "step_5_repaired_execution_path": {
+      "action": "Block answer generation until retrieval readiness is confirmed, then rerun the workflow.",
+      "result": "The system no longer answers from an invalid upstream state."
+    }
+  },
+  "improved_execution_snapshot": {
+    "retrieval_trace": {
+      "retrieval_status": "validated_before_generation",
+      "anchor_state": "required_before_downstream_execution"
+    },
+    "generation_trace": {
+      "generation_status": "blocked_until_ready_then_executed",
+      "generation_state": "structurally_permitted"
+    },
+    "closure_trace": {
+      "readiness_gate": "present",
+      "bridge_status": "validated",
+      "closure_status": "restored_for_mvp_case"
+    },
+    "new_execution_value": [
+      "The operator can now see that the workflow must satisfy readiness before generation.",
+      "The operator can now see that the previous failure was structural, not merely a weak answer.",
+      "The system is now closed enough to support a valid downstream path."
+    ]
+  },
+  "before_after_comparison": {
+    "before": {
+      "answer": "Lite includes those features.",
+      "workflow_state": "advanced_too_early",
+      "repair_state": "unrepaired",
+      "operator_position": "can_see_bad_output_but_not_yet_treat_it_as_a_closure_failure"
+    },
+    "after": {
+      "answer": "generation_blocked_until_upstream_ready_then_released",
+      "workflow_state": "closure_restored_for_minimal_case",
+      "repair_state": "execution_repaired",
+      "operator_position": "can_identify_and_repair_the_broken_gate_and_bridge_path"
+    },
+    "what_changed": [
+      "The first improvement is not a prettier answer. The first improvement is that the workflow stops advancing on an invalid state.",
+      "The operator moves from treating the problem like weak output quality to seeing it as broken execution closure.",
+      "The repaired workflow becomes structurally valid enough for a more reliable next stage."
+    ]
+  },
+  "visible_lesson": {
+    "what_users_should_notice": [
+      "The baseline answer looks wrong, but the deeper issue is that the system should not have answered yet.",
+      "Atlas routing changes the first repair move from continuity guessing to readiness and closure repair.",
+      "After closure is restored, the workflow becomes interpretable as a valid execution path rather than an early jump."
+    ],
+    "core_message": "If the workflow moved forward before closure existed, repair the skeleton first."
+  },
+  "optional_wfgy_escalation": {
+    "escalation_needed": false,
+    "when_to_escalate": [
+      "If closure still fails after obvious gate repair.",
+      "If multiple bridge layers interact and local fixes create new downstream instability.",
+      "If the case requires deeper liveness, retry, or cross-layer stress analysis."
+    ],
+    "handoff_note": "Use WFGY 3.0 only after route-first diagnosis and first execution repair have already made the structural failure legible enough to escalate responsibly."
+  },
+  "review_status": {
+    "replay_clarity": "ready",
+    "route_alignment": "ready",
+    "repair_alignment": "ready",
+    "notebook_dependency": "not_required_for_understanding"
+  }
+}

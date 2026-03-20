@@ -1,0 +1,21 @@
+{
+  "repo_url": "https://github.com/onestardao/WFGY.git",
+  "default_ref": "main",
+  "canonical_subtree": "ProblemMap",
+  "clone_target": "references/upstream/WFGY",
+  "local_seed_candidates": [
+    "WFGY"
+  ],
+  "sparse_paths": [
+    "ProblemMap"
+  ],
+  "required_files": [
+    "ProblemMap/README.md",
+    "ProblemMap/Atlas/atlas-to-ai-adapter-v1.md",
+    "ProblemMap/Atlas/adapter-runtime-modes-v1.md",
+    "ProblemMap/Atlas/adapter-failure-discipline-v1.md",
+    "ProblemMap/Atlas/canonical-casebook-v1.md",
+    "ProblemMap/Atlas/troubleshooting-atlas-router-v1.txt",
+    "ProblemMap/GlobalFixMap/README.md"
+  ]
+}
