@@ -9,7 +9,7 @@ Follow this workflow when producing Mermaid diagrams.
 
 ## Core workflow
 
-1. Read `references/mermaid-agent.md` before generating Mermaid.
+1. Read `references/mermaid-skill.md` before generating Mermaid.
 2. If syntax policy or source provenance is relevant, read `references/mermaid-syntax-sync.md`.
 3. Extract Mermaid intent and normalize input.
 4. Infer diagram type and direction using the reference matrix.
@@ -28,5 +28,5 @@ Follow this workflow when producing Mermaid diagrams.
 
 ## References
 
-- `references/mermaid-agent.md`
+- `references/mermaid-skill.md`
 - `references/mermaid-syntax-sync.md`
