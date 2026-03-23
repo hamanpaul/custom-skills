@@ -1,5 +1,5 @@
 ---
-name: mermaid-agent
+name: mermaid-skill
 description: Generate Mermaid diagrams from natural language, partial/invalid Mermaid, or embedded Mermaid blocks. Use when the user asks to draw or produce diagrams in Mermaid.
 ---
 
