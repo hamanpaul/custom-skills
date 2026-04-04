@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Codex Project Insights Report",
+  "type": "object",
+  "required": [
+    "generated_at",
+    "sessions_root",
+    "session_count",
+    "scoring"
+  ],
+  "properties": {
+    "generated_at": {
+      "type": "string"
+    },
+    "sessions_root": {
+      "type": "string"
+    },
+    "session_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "scoring": {
+      "type": "object",
+      "required": [
+        "scoring_formula",
+        "half_life_days",
+        "short_window_days",
+        "long_window_days",
+        "rows"
+      ],
+      "properties": {
+        "scoring_formula": {
+          "type": "string"
+        },
+        "half_life_days": {
+          "type": "integer"
+        },
+        "short_window_days": {
+          "type": "integer"
+        },
+        "long_window_days": {
+          "type": "integer"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "event_type",
+              "raw_count",
+              "short_weighted",
+              "long_weighted",
+              "severity",
+              "score"
+            ],
+            "properties": {
+              "event_type": {
+                "type": "string"
+              },
+              "raw_count": {
+                "type": "integer"
+              },
+              "short_weighted": {
+                "type": "number"
+              },
+              "long_weighted": {
+                "type": "number"
+              },
+              "severity": {
+                "type": "number"
+              },
+              "score": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
