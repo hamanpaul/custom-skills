@@ -21,14 +21,16 @@ Execute one complete self-maintenance cycle and return verifiable artifacts.
 - ACP provider: `codex`
 - codex model: `gpt-5.3-codex`
 - codex reasoning: `xhigh`
-- codex adapter: `.agents/tools/codex-insights/scripts/codex_exec_acp_adapter.py`
+- codex adapter: `.agents/skills/custom/evolve/scripts/codex_exec_acp_adapter.py`
 
 ## Packaged Helper
 - `scripts/git_gate.sh`
+- `scripts/self_evolve_cycle.py`
+- `scripts/codex_exec_acp_adapter.py`
 
 ## Command
 ```bash
-python3 /home/paul_chen/.agents/tools/codex-insights/scripts/self_evolve_cycle.py \
+python3 /home/paul_chen/.agents/skills/custom/evolve/scripts/self_evolve_cycle.py \
   --repo-root /home/paul_chen \
   --agents-root /home/paul_chen/.agents \
   --sessions-root /home/paul_chen/.codex/sessions \

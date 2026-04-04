@@ -31,9 +31,9 @@ Use for periodic project-level audits (manual or cron).
 
 ## Tooling
 - Standalone scoring:
-  - `.agents/tools/codex-insights/scripts/project_insights.py`
+  - `.agents/skills/custom/codex-project-insights/scripts/project_insights.py`
 - Full cycle orchestration:
-  - `.agents/tools/codex-insights/scripts/self_evolve_cycle.py`
+  - `.agents/skills/custom/codex-project-insights/scripts/self_evolve_cycle.py`
 
 ## Output
 - `insights-<timestamp>.json`
