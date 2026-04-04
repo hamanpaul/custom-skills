@@ -77,7 +77,7 @@ codex features enable multi_agent
 # sdk worker mode (codex delegate)
 /home/paul_chen/.agents/skills/custom/coordinator/scripts/coordinator.sh \
   run --topic "mesh-design" --to-agents "agentA,agentB" --provider codex --worker-mode sdk \
-  --sdk-script /home/paul_chen/.agents/tools/agent-core/scripts/copilot_sdk_orchestrator.mjs \
+  --sdk-script /home/paul_chen/.agents/skills/custom/coordinator/scripts/copilot_sdk_orchestrator.mjs \
   --sdk-delegate-template "codex exec -c model={model_q} -c model_reasoning_effort={reasoning_q} {prompt_q}"
 ```
 
