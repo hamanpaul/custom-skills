@@ -53,6 +53,7 @@ Optional payload may follow on the same line after the bracket:
 2. Only the manager decides reassignment, retry, or cancellation.
 3. The manager must rotate `lease_token` when reassigning a task.
 4. The manager should mirror meaningful worker replies into the shared context files.
+5. If a worker shows repeated confusion, drift, or closure failure, the manager should run the ProblemMap guard before rewriting the task.
 
 ## Worker rules
 
@@ -144,3 +145,19 @@ The first multi-pane validation surfaced two common mistakes:
 2. After `type`, workers still need another `read` before `keys Enter`; otherwise read guard rejects the send.
 
 That is why this skill ships `send-reply.sh` in addition to `send-task.sh`.
+
+## Drift guard guidance
+
+Run the manager-side ProblemMap guard when one or more of these happen:
+
+1. Two or more `ASK` messages on the same task without a scope change.
+2. Three or more `STATUS` messages with little movement toward a terminal answer.
+3. A `FAIL` whose note suggests confusion, missing continuity, or broken execution closure.
+4. A `RESULT` that appears off-target relative to the manager's stated goal.
+
+The guard does not change the worker protocol. It diagnoses the current task trail from the shared context mirror and helps the manager decide between:
+
+- re-grounding the task
+- restoring continuity/context
+- tightening task boundaries
+- reassigning to another worker

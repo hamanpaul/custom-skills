@@ -11,6 +11,8 @@ metadata:
 
 Use this skill when one pane should act as a **manager agent** and coordinate one or more **worker agent panes** through `tmux-bridge`, without first building a separate orchestration runtime.
 
+This version also supports a **ProblemMap drift guard**: the manager can diagnose suspicious worker behavior from the shared context mirror before blindly retrying, widening scope, or rewriting prompts.
+
 ## When to use
 
 - You already have tmux panes running agents such as Copilot CLI or Codex.
@@ -50,6 +52,7 @@ Use this skill when one pane should act as a **manager agent** and coordinate on
 - Writes the shared context mirror
 - Sends `TASK_ASSIGN`
 - Collects `TASK_ACCEPT`, `STATUS`, `RESULT`, `FAIL`
+- Runs ProblemMap drift checks when a worker looks off-task, confused, or stalled
 - Decides requeue / retry / cancel
 
 ### Worker panes
@@ -98,7 +101,23 @@ Use this skill when one pane should act as a **manager agent** and coordinate on
 
 5. Track short replies in the manager pane and mirror meaningful ones back into `context.jsonl` / `context.md` / `live.log`.
 
-6. Let workers send protocol replies with the helper when PATH or read-guard friction appears:
+6. When a worker starts to drift, diagnose before you re-prompt. For example:
+
+   ```bash
+   python3 smux-manager-skill/scripts/problemmap-guard.py \
+     /tmp/smux-manager-demo task-123 codex \
+     --expected "Investigate failing auth tests under tests/ and src/auth.ts"
+   ```
+
+   This writes a ProblemMap case, diagnosis, and gated event artifact under:
+
+   ```text
+   /tmp/smux-manager-demo/artifacts/problemmap/task-123/codex/
+   ```
+
+   Use the diagnosis to decide whether to re-ground the task, restore continuity, tighten boundaries, or reassign the worker.
+
+7. Let workers send protocol replies with the helper when PATH or read-guard friction appears:
 
    ```bash
    TMUX_BRIDGE_BIN="$HOME/.smux/bin/tmux-bridge" \
@@ -138,12 +157,32 @@ See `references/PROTOCOL.md` for the wire format and examples.
 
 See `references/CONTEXT_MIRROR.md` for file layout and update rules.
 
+## ProblemMap drift guard
+
+Use the ProblemMap guard when a worker shows signs such as:
+
+- repeated `ASK` messages on the same task
+- multiple `STATUS` updates with little forward motion
+- a `FAIL` that suggests confusion, loss of continuity, or runtime closure issues
+- a `RESULT` that does not line up with the manager's stated goal
+
+The guard reads `runtime/context/context.jsonl`, builds a compact failure-bearing case, routes it through the sibling `problemmap` skill, and emits:
+
+- `case.json`
+- `diagnosis.json`
+- `event.json`
+
+The diagnosis is manager-facing. It helps the manager choose the next control move instead of improvising generic prompt changes.
+
+See `references/PROBLEMMAP_GUARD.md` for trigger patterns and intervention guidance.
+
 ## Thin helper scripts
 
 - `scripts/init-runtime.sh` — create runtime folders and mirror files
 - `scripts/append-context.sh` — append a sanitized context event to JSONL / Markdown / live log
 - `scripts/send-task.sh` — send a `TASK_ASSIGN` envelope using the required read-act-read cycle
 - `scripts/send-reply.sh` — send worker replies with tmux-bridge path fallback and read-act-read handling
+- `scripts/problemmap-guard.py` — build a ProblemMap case from context events and emit a route-first drift diagnosis
 
 ## Observed thin-helper thresholds
 
@@ -156,6 +195,10 @@ The smux-native MVP worked, but the first live validations exposed two real sour
 2. **Read guard recovery**
    - Workers can accidentally `type` a reply and then forget the extra `read` required before `keys Enter`.
    - A helper script is worth keeping once more than one worker pane is active.
+
+3. **Worker drift is often continuity or boundary failure, not just a bad prompt**
+   - Repeated `ASK`, stalled `STATUS`, and off-target `RESULT` messages can mean F2/F3/F4/F6-class problems.
+   - Run the ProblemMap guard before expanding task scope or retrying with noisier instructions.
 
 ## Escalate beyond smux when
 

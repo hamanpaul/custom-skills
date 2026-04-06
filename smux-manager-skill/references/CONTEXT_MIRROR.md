@@ -86,6 +86,7 @@ Manager should mirror:
 - every manager clarification that changes task scope
 - every worker `ASK` that changes understanding
 - every `RESULT` / `FAIL`
+- every ProblemMap guard outcome that changes the manager's next control move
 
 Manager may skip:
 
@@ -102,3 +103,22 @@ Pane scraping is still acceptable for:
 - manual post-mortem after an agent crash
 
 But the mirror files, not pane scrollback, should be the main shared source of truth.
+
+## Optional ProblemMap events
+
+When the manager runs a drift check, it may mirror a compact `PROBLEMMAP_GUARD` entry such as:
+
+```json
+{
+  "seq": 114,
+  "ts": "2026-04-06T10:19:00Z",
+  "task_id": "task-123",
+  "from": "manager",
+  "to": "codex",
+  "type": "PROBLEMMAP_GUARD",
+  "summary": "F3 continuity risk; restore context before retrying",
+  "artifact_path": "/tmp/smux/artifacts/problemmap/task-123/codex/diagnosis.json"
+}
+```
+
+This gives workers and humans a traceable record of why the manager tightened or reframed the task.
