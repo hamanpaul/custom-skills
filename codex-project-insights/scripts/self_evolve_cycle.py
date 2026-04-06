@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import atexit
 import argparse
 from collections import Counter, defaultdict
 import html
@@ -2572,6 +2573,8 @@ def main(argv: list[str] | None = None) -> int:
     sessions_root, tmp_merged = _merge_sessions_roots(
         primary_sessions_root, extra_sessions_roots, agents_root,
     )
+    if tmp_merged is not None:
+        atexit.register(shutil.rmtree, tmp_merged, ignore_errors=True)
     agents_file = Path(args.agents_file).expanduser()
     if not agents_file.is_absolute():
         agents_file = (agents_root / agents_file).resolve()
