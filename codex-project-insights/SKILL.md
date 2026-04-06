@@ -9,7 +9,8 @@ description: Cross-session audit using weighted scoring to generate ranked rule 
 Use for periodic project-level audits (manual or cron).
 
 ## Inputs
-- `~/.codex/sessions/*.jsonl`
+- `~/.codex/sessions/*.jsonl` (default `--sessions-root`)
+- `~/.copilot/session-state/*/` (via `--extra-sessions-root`)
 - `~/.codex/history.jsonl`
 
 ## Scoring

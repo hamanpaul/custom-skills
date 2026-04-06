@@ -462,6 +462,37 @@ def _collect_commands_from_obj(obj: Any, out: set[str]) -> None:
             _collect_commands_from_obj(item, out)
 
 
+def _merge_sessions_roots(
+    primary: Path,
+    extras: list[Path],
+    tmp_parent: Path,
+) -> tuple[Path, Path | None]:
+    """Merge multiple session roots into one directory via symlinks.
+
+    Returns (effective_sessions_root, tmp_dir_or_None).
+    If no extras are specified, returns (primary, None) with no temp dir.
+    """
+    if not extras:
+        return primary, None
+    merged = Path(tempfile.mkdtemp(prefix="evolve-merged-", dir=tmp_parent))
+    seen: set[str] = set()
+    for root in [primary] + extras:
+        if not root.exists():
+            continue
+        for src in root.rglob("*.jsonl"):
+            rel = src.relative_to(root)
+            # prefix with root name to avoid collisions
+            safe = f"{root.name}__{rel}"
+            safe = safe.replace("/", "__")
+            if safe in seen:
+                continue
+            seen.add(safe)
+            dst = merged / safe
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.symlink_to(src)
+    return merged, merged
+
+
 def _collect_session_evidence(
     sessions_root: Path,
     tracked_events: set[str],
@@ -2505,6 +2536,12 @@ def main(argv: list[str] | None = None) -> int:
         "--summary-out",
         help="Optional summary JSON output path. Default: .agents/reports/insights/cycle-<ts>.json",
     )
+    parser.add_argument(
+        "--extra-sessions-root",
+        action="append",
+        default=[],
+        help="Additional session directory to scan (e.g. ~/.copilot/session-state). Can be repeated.",
+    )
     config_file: Path | None = None
     config_loaded = False
     config_unknown_keys: list[str] = []
@@ -2525,10 +2562,16 @@ def main(argv: list[str] | None = None) -> int:
 
     repo_root = Path(args.repo_root).expanduser().resolve()
     agents_root = Path(args.agents_root).expanduser().resolve()
-    sessions_root = Path(args.sessions_root).expanduser().resolve()
+    primary_sessions_root = Path(args.sessions_root).expanduser().resolve()
+    extra_sessions_roots = [Path(p).expanduser().resolve() for p in args.extra_sessions_root]
     acp_copilot_config_dir = Path(args.acp_copilot_config_dir).expanduser().resolve()
     agents_root.mkdir(parents=True, exist_ok=True)
     runtime_cwd = agents_root.parent if agents_root.parent.exists() else Path.home().resolve()
+
+    tmp_merged: Path | None = None
+    sessions_root, tmp_merged = _merge_sessions_roots(
+        primary_sessions_root, extra_sessions_roots, agents_root,
+    )
     agents_file = Path(args.agents_file).expanduser()
     if not agents_file.is_absolute():
         agents_file = (agents_root / agents_file).resolve()
@@ -2563,6 +2606,8 @@ def main(argv: list[str] | None = None) -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
         print(str(out))
+        if tmp_merged is not None:
+            shutil.rmtree(tmp_merged, ignore_errors=True)
         return 2
 
     preexisting_changes: set[str] = set()
@@ -2589,6 +2634,8 @@ def main(argv: list[str] | None = None) -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
         print(str(out))
+        if tmp_merged is not None:
+            shutil.rmtree(tmp_merged, ignore_errors=True)
         return 2
 
     insights_report = insights_dir / f"insights-{ts}.json"
@@ -3038,6 +3085,8 @@ def main(argv: list[str] | None = None) -> int:
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(str(summary_path))
+    if tmp_merged is not None:
+        shutil.rmtree(tmp_merged, ignore_errors=True)
     return 0
 
 
