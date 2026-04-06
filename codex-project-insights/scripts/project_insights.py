@@ -52,7 +52,7 @@ def _find_session_timestamp(lines: list[dict[str, Any]], fallback: datetime) -> 
 def _read_session(path: Path) -> SessionStats | None:
     lines: list[dict[str, Any]] = []
     try:
-        with path.open(encoding="utf-8") as f:
+        with path.open(encoding="utf-8", errors="replace") as f:
             for raw in f:
                 raw = raw.strip()
                 if not raw:

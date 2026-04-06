@@ -13,7 +13,7 @@ from typing import Any
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    with path.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8", errors="replace") as f:
         for raw in f:
             raw = raw.strip()
             if not raw:

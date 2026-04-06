@@ -510,7 +510,7 @@ def _collect_session_evidence(
         session_paths: set[str] = set()
         session_commands: set[str] = set()
         try:
-            with path.open(encoding="utf-8") as f:
+            with path.open(encoding="utf-8", errors="replace") as f:
                 for raw in f:
                     text = raw.strip()
                     if not text:
